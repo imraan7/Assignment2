@@ -1,11 +1,12 @@
 package com.example.aymren.assignment2;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.Random;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     Button a1, a2, a3, b1, b2, b3, c1, c2, c3, nGame;
@@ -33,18 +34,32 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         array = new Button[]{a1, a2, a3, b1, b2, b3, c1, c2, c3};
 
-            for (Button b : array)
-                //wanneer op de button wordt geklikt, wordt het door de clicklistener geregistreerd
-                b.setOnClickListener(this);
+        playerTurn();
 
         nGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                turn = true;
-                turnCount = 0;
-                enableDisableAllButtons(true);
+            turn = true;
+            turnCount = 0;
+            enableDisableAllButtons(true);
             }
         });
+    }
+    private void playerTurn(){
+        for (Button b : array)
+            //wanneer op de button wordt geklikt, wordt het door de clicklistener geregistreerd
+            b.setOnClickListener(this);
+    }
+    private void computerTurn(){
+        Random rnd = new Random();
+        int index = rnd.nextInt(array.length);
+        Button b = array[index];
+        b.setText("O");
+        turnCount++;
+        b.setClickable(false);
+        turn = true;
+        checkForWinner();
+        playerTurn();
     }
 
     @Override
@@ -56,13 +71,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void buttonClicked(Button b) {
         if(turn)
             b.setText("X");
-        else
-            b.setText("O");
         turnCount++;
         b.setClickable(false);
 
         turn = !turn;
         checkForWinner();
+        computerTurn();
     }
 
     private void checkForWinner() {
@@ -87,7 +101,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         else if(a3.getText() == b2.getText() && b2.getText() == c1.getText() && !a3.isClickable())
             winner = true;
 
-        if(winner == true) {
+        if(winner) {
             if (turn)
                 toast("O Wins!");
             else
